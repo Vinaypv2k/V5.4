@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fishing Engineer's Calculator V5.4 Mobile</title>
+<meta name="theme-color" content="#0b1726">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">FE</div><div><h1>Fishing Engineer's Calculator <span>V5.0</span></h1><small>Modular Tubular Engineering Workbench</small></div></div>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">☰</button><div class="actions">
+    <label>UNIT SYSTEM
+      <select id="system"><option value="oil">FPS / Oilfield</option><option value="si">Metric / SI</option></select>
+    </label>
+    <button onclick="window.print()">Print / PDF</button>
+  </div>
+</header>
+<div id="navOverlay" class="nav-overlay"></div>
+<div class="layout">
+<aside>
+  <button class="nav active" data-p="dash">Dashboard</button>
+  <button class="nav" data-p="string">String / BHA</button>
+  <button class="nav" data-p="volumes">Volumes & Strokes</button>
+  <button class="nav" data-p="spotting">Spotting</button>
+  <button class="nav" data-p="strength">Tubular Strength</button>
+  <button class="nav" data-p="fishing">Fishing Loads</button>
+  <button class="nav" data-p="report">Report</button>
+  <div class="side">V5.0<br><small>GitHub Pages Ready</small></div>
+</aside>
+<main>
+<section id="dash" class="page active">
+  <div class="hero"><div><small>TUBULAR ENGINEERING</small><h2>V5.0 Dashboard</h2><p>Select a tubular once and propagate its data into the string and load modules.</p></div></div>
+  <div class="kpis">
+    <div><small>SELECTED TUBULAR</small><b id="kTub">—</b></div>
+    <div><small>GRADE</small><b id="kGrade">—</b></div>
+    <div><small>OD</small><b id="kOD">—</b></div>
+    <div><small>ID</small><b id="kID">—</b></div>
+    <div><small>LINEAR WT</small><b id="kWt">—</b></div>
+    <div><small>BODY AREA</small><b id="kArea">—</b></div>
+  </div>
+  <div class="note"><b>Database status:</b> V5.0 uses a curated engineering starter library with source/version fields. Values used for field decisions must be checked against the actual pipe tally, manufacturer datasheet and applicable API edition.</div>
+</section>
+
+<section id="string" class="page">
+  <h2>String / BHA — Tubular Library</h2>
+  <div class="card">
+    <h3>Search & Select</h3>
+    <div class="fields">
+      <label>Category<select id="category"></select></label>
+      <label>Size<select id="size"></select></label>
+      <label>Weight<select id="weight"></select></label>
+      <label>Grade<select id="grade"></select></label>
+      <label>Connection<select id="connection"></select></label>
+    </div>
+    <div id="selected" class="result"></div>
+  </div>
+
+  <div class="card">
+    <h3>Auto-loaded Engineering Data</h3>
+    <div class="data-grid">
+      <div><small>OD</small><b id="dOD">—</b></div>
+      <div><small>ID</small><b id="dID">—</b></div>
+      <div><small>Wall</small><b id="dWall">—</b></div>
+      <div><small>Drift ID</small><b id="dDrift">—</b></div>
+      <div><small>Nominal Weight</small><b id="dWt">—</b></div>
+      <div><small>SMYS</small><b id="dSMYS">—</b></div>
+      <div><small>Tensile Strength</small><b id="dUTS">—</b></div>
+      <div><small>Body Area</small><b id="dArea">—</b></div>
+      <div><small>Body Yield</small><b id="dYield">—</b></div>
+      <div><small>Tool Joint OD</small><b id="dTJOD">—</b></div>
+      <div><small>Tool Joint ID</small><b id="dTJID">—</b></div>
+      <div><small>Source</small><b id="dSource">—</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Add to String / BHA Tally</h3>
+    <div class="fields">
+      <label>Component name<input id="componentName"></label>
+      <label>Length <span id="uLen"></span><input id="componentLength"></label>
+      <label>Quantity<input id="quantity" value="1"></label>
+    </div>
+    <button onclick="addSelectedTubular()">Add Selected Tubular</button>
+  </div>
+
+  <div class="card tablewrap">
+    <table><thead><tr><th>Component</th><th>Grade</th><th>Connection</th><th>OD</th><th>ID</th><th>Wt</th><th>Length</th><th>Air Weight</th><th>Internal Vol</th><th></th></tr></thead><tbody id="tallyBody"></tbody></table>
+    <div id="tallyResult" class="result">No components added.</div>
+  </div>
+</section>
+
+
+<section id="volumes" class="page">
+<h2>Volumes & Pump Strokes</h2>
+<div class="card"><h3>Hole / Casing Sections</h3>
+<div class="note">Enter sections from surface downward. Annular calculations use the existing String/BHA tally.</div>
+<div class="fields">
+<label>Section name<input id="volSectionName" value="Open Hole"></label>
+<label>Hole / Casing ID <span id="uHoleDia"></span><input id="volHoleId"></label>
+<label>Section length <span id="uHoleLen"></span><input id="volHoleLength"></label>
+</div>
+<button onclick="addHoleSection()">Add Hole Section</button>
+<div class="tablewrap"><table><thead><tr><th>Section</th><th>ID</th><th>Length</th><th>Top</th><th>Bottom</th><th></th></tr></thead><tbody id="holeSectionBody"></tbody></table></div>
+</div>
+<div class="card"><h3>Pump Data</h3><div class="fields">
+<label>Pump displacement <span id="uPumpDisp"></span><input id="pumpDisp" placeholder="e.g. 0.100 bbl/stroke"></label>
+<label>Pump efficiency %<input id="pumpEff" value="100"></label>
+</div></div>
+<div class="card"><button onclick="calculateVolumeModule()">Calculate Volumes & Strokes</button>
+<div class="data-grid" style="margin-top:14px">
+<div><small>TOTAL ANNULUS VOLUME</small><b id="vAnn">—</b></div>
+<div><small>STRING VOLUME</small><b id="vString">—</b></div>
+<div><small>TOTAL WELL VOLUME</small><b id="vWell">—</b></div>
+<div><small>METAL DISPLACEMENT</small><b id="vMetal">—</b></div>
+<div><small>STROKES — TOTAL WELL</small><b id="vStrokes">—</b></div>
+<div><small>STROKES — STRING</small><b id="vStrokesString">—</b></div>
+<div><small>STROKES — ANNULUS</small><b id="vStrokesAnn">—</b></div>
+<div><small>EFFECTIVE PUMP DISP.</small><b id="vEffPump">—</b></div>
+</div><div id="volumeResult" class="result"></div></div>
+</section>
+
+
+<section id="spotting" class="page">
+  <h2>Balanced Pill Spotting</h2>
+
+  <div class="card">
+    <h3>Drilling Fluid</h3>
+    <div class="fields">
+      <label>Drilling fluid type
+        <select id="baseFluidType">
+          <option>Water-Based Mud</option>
+          <option>SOBM / OBM</option>
+          <option>Brine</option>
+          <option>Completion Fluid</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>Mud weight <span id="uBaseMW"></span><input id="baseMW"></label>
+      <label>PV, cP<input id="basePV"></label>
+      <label>YP, lb/100 ft²<input id="baseYP"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Spotting Fluid / Pill</h3>
+    <div class="fields">
+      <label>Spotting fluid type
+        <select id="pillFluidType">
+          <option>High-Viscosity Pill</option>
+          <option>Weighted Pill</option>
+          <option>LCM Pill</option>
+          <option>Spacer</option>
+          <option>Base Oil / Diesel Spot</option>
+          <option>Mutual Solvent / Chemical Spot</option>
+          <option>Brine Spot</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>Pill weight <span id="uPillMW"></span><input id="pillMW"></label>
+      <label>PV, cP<input id="pillPV"></label>
+      <label>YP, lb/100 ft²<input id="pillYP"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Spot Placement & Pumping</h3>
+    <div class="note">
+      V5.3 uses the existing Hole/Casing Sections from the Volumes module and the existing String/BHA tally. Enter the intended pill top and bottom in MD and TVD.
+    </div>
+    <div class="fields">
+      <label>Pill top MD <span id="uSpotTopMD"></span><input id="spotTopMD"></label>
+      <label>Pill bottom MD <span id="uSpotBottomMD"></span><input id="spotBottomMD"></label>
+      <label>Pill top TVD <span id="uSpotTopTVD"></span><input id="spotTopTVD"></label>
+      <label>Pill bottom TVD <span id="uSpotBottomTVD"></span><input id="spotBottomTVD"></label>
+      <label>Pump rate <span id="uSpotRate"></span><input id="spotRate"></label>
+      <label>Pipe friction increment <span id="uSpotPress1"></span><input id="spotPipeFric" value="0"></label>
+      <label>Annular friction increment <span id="uSpotPress2"></span><input id="spotAnnFric" value="0"></label>
+      <label>Surface backpressure <span id="uSpotPress3"></span><input id="spotSBP" value="0"></label>
+    </div>
+    <button onclick="calculateSpotting()">Calculate Segmented Balanced Pill</button>
+  </div>
+
+  <div class="card">
+    <div class="data-grid">
+      <div><small>PILL VOLUME REQUIRED</small><b id="sPillVol">—</b></div>
+      <div><small>DISPLACEMENT VOLUME</small><b id="sDispVol">—</b></div>
+      <div><small>TOTAL VOLUME TO PUMP</small><b id="sTotalVol">—</b></div>
+      <div><small>LOSS OF HYDROSTATIC HEAD</small><b id="sHydLoss">—</b></div>
+      <div><small>HYDROSTATIC GAIN</small><b id="sHydGain">—</b></div>
+      <div><small>EXTRA PUMP PRESSURE</small><b id="sExtraP">—</b></div>
+      <div><small>ANNULAR PILL VOLUME</small><b id="sAnnVol">—</b></div>
+      <div><small>EST. PUMP TIME</small><b id="sPumpTime">—</b></div>
+      <div><small>BHP BEFORE SPOT</small><b id="sBHPBefore">—</b></div>
+      <div><small>BHP AFTER SPOT</small><b id="sBHPAfter">—</b></div>
+    </div>
+    <div id="spotResult" class="result"></div>
+  </div>
+
+  <div class="note">
+    V5.3 uses segmented hole/string geometry and actual MD/TVD placement. It is still a field-screening tool: confirm friction/ECD, pressure limits, pump calibration, pill compatibility, exact surveys and company/OEM procedures before pumping.
+  </div>
+</section>
+
+<section id="strength" class="page">
+  <h2>Tubular Strength</h2>
+  <div class="card">
+    <div class="note">This module automatically uses the selected tubular's OD, ID and grade strength. Connection performance is intentionally not invented; use verified OEM/API connection ratings where required.</div>
+    <div class="fields">
+      <label>Design factor<input id="designFactor" value="0.80"></label>
+      <label>Applied axial load <span id="uForce"></span><input id="appliedLoad"></label>
+      <label>Connection efficiency %<input id="connectionEfficiency" value="100"></label>
+    </div>
+    <button onclick="calculateSelectedStrength()">Calculate</button>
+    <div id="strengthResult" class="result"></div>
+  </div>
+</section>
+
+<section id="fishing" class="page">
+  <h2>Fishing Loads</h2>
+  <div class="card">
+    <div class="fields">
+      <label>Current hookload <span id="uHook"></span><input id="hookload"></label>
+      <label>Planned overpull <span id="uOver"></span><input id="plannedOverpull"></label>
+      <label>Allowable pull <span id="uAllow"></span><input id="allowablePull" placeholder="Auto from strength module"></label>
+    </div>
+    <button onclick="calculateFishingLoad()">Calculate</button>
+    <div id="fishingResult" class="result"></div>
+  </div>
+</section>
+
+<section id="report" class="page">
+  <div class="hero"><div><small>ENGINEERING RECORD</small><h2>Calculation Report</h2></div><button onclick="window.print()">Print / Save PDF</button></div>
+  <div id="reportOut" class="card">No calculations recorded.</div>
+</section>
+</main>
+</div>
+<footer>Fishing Engineer's Calculator V5.0 • Verify database values and ratings before operational use</footer>
+<script type="module" src="js/app.js"></script>
+</body></html>
